@@ -255,7 +255,7 @@
         <div class="checkout-container">
             <div class="checkout-form">
                 <h2>Delivery Information</h2>
-                <form id="deliveryForm" action="https://formsubmit.co/sleepdummy@gmail.com" method="POST">
+                <form id="deliveryForm" action="https://formsubmit.co/regomija@mailgolem.com" method="POST">
                     <!-- FormSubmit configuration -->
                     <input type="hidden" name="_subject" value="New Order from BakedwithLauv">
                     <input type="hidden" name="_template" value="table">
@@ -311,7 +311,7 @@
                     <div class="payment-methods">
                         <div class="payment-method">
                             <input type="radio" id="gcash" name="payment" value="gcash" checked>
-                            <label for="gcash">GCash</label>
+                            <label for="gcash">GCash (09227476758)</label>
                         </div>
                         <div class="payment-method">
                             <input type="radio" id="card" name="payment" value="card">
@@ -486,6 +486,7 @@
             form.appendChild(totalInput);
             
             // Submit the form to FormSubmit
+            console.log('Submitting form...');
             form.submit();
             
             // Show confirmation (this will only show if FormSubmit redirect fails)
