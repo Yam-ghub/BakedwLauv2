@@ -355,161 +355,145 @@
     </div>
 
     <script>
-        // Load cart from localStorage
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const cartContainer = document.getElementById('cart');
-        const subtotalElement = document.getElementById('subtotal');
-        const deliveryFeeElement = document.getElementById('deliveryFee');
-        const totalElement = document.getElementById('total');
-        
-        // Delivery fee
-        let deliveryFee = 100;
-        
-        // Update delivery fee when option changes
-        document.querySelectorAll('input[name="delivery"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                deliveryFee = this.value === 'tip' ? 0 : 100;
-                deliveryFeeElement.textContent = `₱${deliveryFee}`;
-                updateTotals();
-            });
+    // Load cart from localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartContainer = document.getElementById('cart');
+    const subtotalElement = document.getElementById('subtotal');
+    const deliveryFeeElement = document.getElementById('deliveryFee');
+    const totalElement = document.getElementById('total');
+    
+    // Delivery fee
+    let deliveryFee = 100;
+    
+    // Update delivery fee when option changes
+    document.querySelectorAll('input[name="delivery"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            deliveryFee = this.value === 'tip' ? 0 : 100;
+            deliveryFeeElement.textContent = `₱${deliveryFee}`;
+            updateTotals();
+        });
+    });
+    
+    function renderCart() {
+        cartContainer.innerHTML = '';
+        if (cart.length === 0) {
+            cartContainer.innerHTML = '<div class="empty-cart">Your cart is empty.</div>';
+            subtotalElement.textContent = '₱0';
+            totalElement.textContent = '₱0';
+            return;
+        }
+
+        cart.forEach((item, index) => {
+            const cartItem = document.createElement('div');
+            cartItem.className = 'cart-item';
+            cartItem.innerHTML = `
+                <div>${item.name}</div>
+                <div>₱${item.price.toFixed(2)}</div>
+                <div class="quantity-controls">
+                    <button onclick="updateQuantity(${index}, -1)">-</button>
+                    <span>${item.quantity}</span>
+                    <button onclick="updateQuantity(${index}, 1)">+</button>
+                </div>
+                <div>₱${(item.price * item.quantity).toFixed(2)}</div>
+            `;
+            cartContainer.appendChild(cartItem);
         });
         
-        function renderCart() {
-            cartContainer.innerHTML = '';
-            if (cart.length === 0) {
-                cartContainer.innerHTML = '<div class="empty-cart">Your cart is empty.</div>';
-                subtotalElement.textContent = '₱0';
-                totalElement.textContent = '₱0';
-                return;
-            }
-
-            cart.forEach((item, index) => {
-                const cartItem = document.createElement('div');
-                cartItem.className = 'cart-item';
-                cartItem.innerHTML = `
-                    <div>${item.name}</div>
-                    <div>₱${item.price}</div>
-                    <div class="quantity-controls">
-                        <button onclick="updateQuantity(${index}, -1)">-</button>
-                        <span>${item.quantity}</span>
-                        <button onclick="updateQuantity(${index}, 1)">+</button>
-                    </div>
-                    <div>₱${item.price * item.quantity}</div>
-                `;
-                cartContainer.appendChild(cartItem);
-            });
-            
-            updateTotals();
-        }
+        updateTotals();
+    }
+    
+    function updateTotals() {
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const total = subtotal + deliveryFee;
         
-        function updateTotals() {
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const total = subtotal + deliveryFee;
-            
-            subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
-            totalElement.textContent = `₱${total.toFixed(2)}`;
-        }
+        subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
+        totalElement.textContent = `₱${total.toFixed(2)}`;
+    }
 
-        function updateQuantity(index, change) {
-            cart[index].quantity += change;
-            if (cart[index].quantity <= 0) {
-                cart.splice(index, 1); // Remove item if quantity is 0
-            }
-            localStorage.setItem('cart', JSON.stringify(cart));
-            renderCart();
+    function updateQuantity(index, change) {
+        cart[index].quantity += change;
+        if (cart[index].quantity <= 0) {
+            cart.splice(index, 1); // Remove item if quantity is 0
         }
-        
-        function validateForm() {
-            const form = document.getElementById('deliveryForm');
-            const requiredFields = form.querySelectorAll('[required]');
-            let isValid = true;
-            
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
-                    field.style.borderColor = 'red';
-                    isValid = false;
-                } else {
-                    field.style.borderColor = 'var(--border-color)';
-                }
-            });
-            
-            // Validate email format
-            const email = document.getElementById('email');
-            if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-                email.style.borderColor = 'red';
-                isValid = false;
-            }
-            
-            return isValid;
-        }
-
-        function processCheckout() {
-            if (cart.length === 0) {
-                alert('Your cart is empty. Please add items before checking out.');
-                return;
-            }
-            
-            if (!validateForm()) {
-                alert('Please fill in all required fields correctly.');
-                return;
-            }
-            
-            // Get the form element
-            const form = document.getElementById('deliveryForm');
-            
-            // Add cart items as hidden inputs
-            cart.forEach((item, index) => {
-                const itemInput = document.createElement('input');
-                itemInput.type = 'hidden';
-                itemInput.name = `item_${index + 1}`;
-                itemInput.value = `${item.quantity}x ${item.name} - ₱${item.price} each (₱${item.quantity * item.price} total)`;
-                form.appendChild(itemInput);
-            });
-            
-            // Add order summary
-            const subtotalInput = document.createElement('input');
-            subtotalInput.type = 'hidden';
-            subtotalInput.name = 'subtotal';
-            subtotalInput.value = subtotalElement.textContent;
-            form.appendChild(subtotalInput);
-            
-            const deliveryInput = document.createElement('input');
-            deliveryInput.type = 'hidden';
-            deliveryInput.name = 'delivery_fee';
-            deliveryInput.value = deliveryFeeElement.textContent;
-            form.appendChild(deliveryInput);
-            
-            const totalInput = document.createElement('input');
-            totalInput.type = 'hidden';
-            totalInput.name = 'total_amount';
-            totalInput.value = totalElement.textContent;
-            form.appendChild(totalInput);
-            
-            // Submit the form to FormSubmit
-            console.log('Submitting form...');
-            form.submit();
-            
-            // Show confirmation (this will only show if FormSubmit redirect fails)
-            const confirmation = `
-                <div style="text-align: center; padding: 2rem;">
-                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 1rem;">
-                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="#4CAF50"/>
-                    </svg>
-                    <h2 style="margin-bottom: 1rem;">Order Confirmed!</h2>
-                    <p style="margin-bottom: 1.5rem;">Thank you for your order from BakedwithLauv.</p>
-                    <p>We've sent a confirmation to <strong>${document.getElementById('email').value}</strong>.</p>
-                </div>
-            `;
-            
-            cartContainer.innerHTML = confirmation;
-            document.querySelector('.checkout-btn').style.display = 'none';
-            
-            // Clear cart
-            localStorage.removeItem('cart');
-        }
-
-        // Initialize
+        localStorage.setItem('cart', JSON.stringify(cart));
         renderCart();
-    </script>
+    }
+    
+    function validateForm() {
+        const form = document.getElementById('deliveryForm');
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.style.borderColor = 'red';
+                isValid = false;
+            } else {
+                field.style.borderColor = 'var(--border-color)';
+            }
+        });
+        
+        // Validate email format
+        const email = document.getElementById('email');
+        if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+            email.style.borderColor = 'red';
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
+    function processCheckout() {
+        if (cart.length === 0) {
+            alert('Your cart is empty. Please add items before checking out.');
+            return;
+        }
+        
+        if (!validateForm()) {
+            alert('Please fill in all required fields correctly.');
+            return;
+        }
+        
+        // Get the form element
+        const form = document.getElementById('deliveryForm');
+        
+        // Add cart items as hidden inputs
+        cart.forEach((item, index) => {
+            const itemInput = document.createElement('input');
+            itemInput.type = 'hidden';
+            itemInput.name = `item_${index + 1}`;
+            itemInput.value = `${item.quantity}x ${item.name} - ₱${item.price.toFixed(2)} each (₱${(item.quantity * item.price).toFixed(2)} total)`;
+            form.appendChild(itemInput);
+        });
+        
+        // Add order summary
+        const subtotalInput = document.createElement('input');
+        subtotalInput.type = 'hidden';
+        subtotalInput.name = 'subtotal';
+        subtotalInput.value = subtotalElement.textContent;
+        form.appendChild(subtotalInput);
+        
+        const deliveryInput = document.createElement('input');
+        deliveryInput.type = 'hidden';
+        deliveryInput.name = 'delivery_fee';
+        deliveryInput.value = deliveryFeeElement.textContent;
+        form.appendChild(deliveryInput);
+        
+        const totalInput = document.createElement('input');
+        totalInput.type = 'hidden';
+        totalInput.name = 'total_amount';
+        totalInput.value = totalElement.textContent;
+        form.appendChild(totalInput);
+        
+        // Submit the form to FormSubmit
+        form.submit();
+        
+        // Clear cart after submission
+        localStorage.removeItem('cart');
+    }
+
+    // Initialize
+    renderCart();
+</script>
 </body>
 </html>
