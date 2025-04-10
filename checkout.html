@@ -255,37 +255,43 @@
         <div class="checkout-container">
             <div class="checkout-form">
                 <h2>Delivery Information</h2>
-                <form id="deliveryForm">
+                <form id="deliveryForm" action="https://formsubmit.co/sleepdummy@gmail.com" method="POST">
+                    <!-- FormSubmit configuration -->
+                    <input type="hidden" name="_subject" value="New Order from BakedwithLauv">
+                    <input type="hidden" name="_template" value="table">
+                    <input type="hidden" name="_next" value="thank-you.html">
+                    <input type="hidden" name="_captcha" value="false">
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name</label>
-                            <input type="text" id="firstName" required>
+                            <input type="text" id="firstName" name="firstName" required>
                         </div>
                         <div class="form-group">
                             <label for="lastName">Last Name</label>
-                            <input type="text" id="lastName" required>
+                            <input type="text" id="lastName" name="lastName" required>
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" required>
+                        <input type="email" id="email" name="email" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" required>
+                        <input type="tel" id="phone" name="phone" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="address">Delivery Address</label>
-                        <textarea id="address" rows="3" required></textarea>
+                        <textarea id="address" name="address" rows="3" required></textarea>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="city">City</label>
-                            <input type="text" id="city" required>
+                            <input type="text" id="city" name="city" required>
                         </div>
                     </div>
                     
@@ -315,8 +321,10 @@
                     
                     <div class="form-group" style="margin-top: 2rem;">
                         <label for="notes">Special Instructions (Optional)</label>
-                        <textarea id="notes" rows="2"></textarea>
+                        <textarea id="notes" name="notes" rows="2"></textarea>
                     </div>
+                    
+                    <!-- Hidden fields for cart items will be added by JavaScript -->
                 </form>
             </div>
             
@@ -446,31 +454,41 @@
                 return;
             }
             
-            // Gather all order information
-            const order = {
-                customer: {
-                    firstName: document.getElementById('firstName').value,
-                    lastName: document.getElementById('lastName').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    address: document.getElementById('address').value,
-                    city: document.getElementById('city').value,
-                    zip: document.getElementById('zip').value,
-                    notes: document.getElementById('notes').value
-                },
-                delivery: document.querySelector('input[name="delivery"]:checked').value,
-                payment: document.querySelector('input[name="payment"]:checked').value,
-                items: [...cart],
-                subtotal: parseFloat(subtotalElement.textContent.replace('₱', '')),
-                deliveryFee: deliveryFee,
-                total: parseFloat(totalElement.textContent.replace('₱', '')),
-                date: new Date().toISOString()
-            };
+            // Get the form element
+            const form = document.getElementById('deliveryForm');
             
-            // In a real app, you would send this to your server
-            console.log('Order submitted:', order);
+            // Add cart items as hidden inputs
+            cart.forEach((item, index) => {
+                const itemInput = document.createElement('input');
+                itemInput.type = 'hidden';
+                itemInput.name = `item_${index + 1}`;
+                itemInput.value = `${item.quantity}x ${item.name} - ₱${item.price} each (₱${item.quantity * item.price} total)`;
+                form.appendChild(itemInput);
+            });
             
-            // Show confirmation
+            // Add order summary
+            const subtotalInput = document.createElement('input');
+            subtotalInput.type = 'hidden';
+            subtotalInput.name = 'subtotal';
+            subtotalInput.value = subtotalElement.textContent;
+            form.appendChild(subtotalInput);
+            
+            const deliveryInput = document.createElement('input');
+            deliveryInput.type = 'hidden';
+            deliveryInput.name = 'delivery_fee';
+            deliveryInput.value = deliveryFeeElement.textContent;
+            form.appendChild(deliveryInput);
+            
+            const totalInput = document.createElement('input');
+            totalInput.type = 'hidden';
+            totalInput.name = 'total_amount';
+            totalInput.value = totalElement.textContent;
+            form.appendChild(totalInput);
+            
+            // Submit the form to FormSubmit
+            form.submit();
+            
+            // Show confirmation (this will only show if FormSubmit redirect fails)
             const confirmation = `
                 <div style="text-align: center; padding: 2rem;">
                     <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 1rem;">
@@ -478,8 +496,7 @@
                     </svg>
                     <h2 style="margin-bottom: 1rem;">Order Confirmed!</h2>
                     <p style="margin-bottom: 1.5rem;">Thank you for your order from BakedwithLauv.</p>
-                    <p>We've sent a confirmation to <strong>${order.customer.email}</strong>.</p>
-                    <p style="margin-top: 1rem;">Your order number is <strong>#${Math.floor(Math.random() * 1000000)}</strong></p>
+                    <p>We've sent a confirmation to <strong>${document.getElementById('email').value}</strong>.</p>
                 </div>
             `;
             
@@ -488,9 +505,6 @@
             
             // Clear cart
             localStorage.removeItem('cart');
-            
-            // Optionally redirect to home after delay
-            // setTimeout(() => window.location.href = 'index.html', 5000);
         }
 
         // Initialize
