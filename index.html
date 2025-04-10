@@ -346,7 +346,7 @@
                 <h3>Oreo Soft Cookie</h3>
                 <p>Soft and chewy with the perfect blend of Oreo cookies</p>
                 <span class="price">₱120</span>
-                <button class="btn-3d">Add to Cart</button>
+                <button class="btn-3d" onclick="addToCart('Oreo Soft Cookie', 120)">Add to Cart</button>
             </div>
 
             <!-- Cookie Cereals -->
@@ -355,7 +355,7 @@
                 <h3>Cookie Cereals</h3>
                 <p>Crispy and crunchy cookie-shaped cereals</p>
                 <span class="price">₱150</span>
-                <button class="btn-3d">Add to Cart</button>
+                <button class="btn-3d" onclick="addToCart('Cookie Cereals', 150)">Add to Cart</button>
             </div>
 
             <!-- Marshmallow Cookie -->
@@ -364,7 +364,7 @@
                 <h3>Marshmallow Cookie</h3>
                 <p>Chewy cookie filled with gooey marshmallows</p>
                 <span class="price">₱135</span>
-                <button class="btn-3d">Add to Cart</button>
+                <button class="btn-3d" onclick="addToCart('Marshmallow Cookie', 135)">Add to Cart</button>
             </div>
         </div>
     </section>
@@ -429,7 +429,7 @@
         <p>&copy; 2025 BakedwithLauv. All rights reserved.</p>
         <p style="margin-top: 1rem;">
             <i class="fas fa-envelope"></i> lauviahdenisse@gmail.com | 
-            <i class="fas fa-phone"></i> 09774559860
+            <i class="fas fa-phone"></i> 09227476758
         </p>
     </footer>
 
@@ -445,6 +445,16 @@
                 this.style.transform = 'translateY(0) rotateY(0)';
             });
         });
+
+        function addToCart(productName, price) {
+            const cartItem = {
+                name: productName,
+                price: price,
+                quantity: 1
+            };
+            localStorage.setItem('cart', JSON.stringify(cartItem));
+            window.location.href = 'checkout.html';
+        }
     </script>
 </body>
 </html>

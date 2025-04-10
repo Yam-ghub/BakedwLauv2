@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - BakedwithLauv</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FFA2B9;
+            --primary-dark: #FF8FAB;
+            --secondary-color: #FAE8ED;
+            --text-color: #5a1a1a;
+            --light-color: #FFF9FB;
+            --border-color: #E8C8D2;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        h1, h2, h3 {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+        
+        .checkout-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+        
+        .checkout-form {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .order-summary {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+            max-height: 800px;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 162, 185, 0.2);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item div {
+            flex: 1;
+        }
+        
+        .cart-item .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .cart-item button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cart-item button:hover {
+            background: var(--primary-dark);
+        }
+        
+        .summary-totals {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--border-color);
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-row.total {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+        }
+        
+        button.checkout-btn {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button.checkout-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 143, 171, 0.4);
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 2rem;
+            color: #888;
+        }
+        
+        .payment-methods {
+            margin-top: 1rem;
+        }
+        
+        .payment-method {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .payment-method input {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+        
+        .delivery-options {
+            margin-top: 1rem;
+        }
+        
+        .delivery-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .delivery-option input {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-container {
+                flex-direction: column;
+            }
+            
+            .order-summary {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Checkout</h1>
+        
+        <div class="checkout-container">
+            <div class="checkout-form">
+                <h2>Delivery Information</h2>
+                <form id="deliveryForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Delivery Address</label>
+                        <textarea id="address" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" required>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem;">Delivery Options</h3>
+                    <div class="delivery-options">
+                        <div class="delivery-option">
+                            <input type="radio" id="lalamove" name="delivery" value="lalamove" checked>
+                            <label for="lalamove">Lalamove (₱100)</label>
+                        </div>
+                        <div class="delivery-option">
+                            <input type="radio" id="tip" name="delivery" value="tip">
+                            <label for="tip">Technological Institute of the Philippines (Free)</label>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem;">Payment Method</h3>
+                    <div class="payment-methods">
+                        <div class="payment-method">
+                            <input type="radio" id="gcash" name="payment" value="gcash" checked>
+                            <label for="gcash">GCash</label>
+                        </div>
+                        <div class="payment-method">
+                            <input type="radio" id="card" name="payment" value="card">
+                            <label for="card">Cash on Delivery</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 2rem;">
+                        <label for="notes">Special Instructions (Optional)</label>
+                        <textarea id="notes" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                <div id="cart">
+                    <!-- Cart items will be rendered here -->
+                </div>
+                
+                <div class="summary-totals">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span id="subtotal">₱0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery Fee</span>
+                        <span id="deliveryFee">₱100</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span id="total">₱0</span>
+                    </div>
+                </div>
+                
+                <button class="checkout-btn" onclick="processCheckout()">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load cart from localStorage
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartContainer = document.getElementById('cart');
+        const subtotalElement = document.getElementById('subtotal');
+        const deliveryFeeElement = document.getElementById('deliveryFee');
+        const totalElement = document.getElementById('total');
+        
+        // Delivery fee
+        let deliveryFee = 100;
+        
+        // Update delivery fee when option changes
+        document.querySelectorAll('input[name="delivery"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                deliveryFee = this.value === 'tip' ? 0 : 100;
+                deliveryFeeElement.textContent = `₱${deliveryFee}`;
+                updateTotals();
+            });
+        });
+        
+        function renderCart() {
+            cartContainer.innerHTML = '';
+            if (cart.length === 0) {
+                cartContainer.innerHTML = '<div class="empty-cart">Your cart is empty.</div>';
+                subtotalElement.textContent = '₱0';
+                totalElement.textContent = '₱0';
+                return;
+            }
+
+            cart.forEach((item, index) => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div>${item.name}</div>
+                    <div>₱${item.price}</div>
+                    <div class="quantity-controls">
+                        <button onclick="updateQuantity(${index}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="updateQuantity(${index}, 1)">+</button>
+                    </div>
+                    <div>₱${item.price * item.quantity}</div>
+                `;
+                cartContainer.appendChild(cartItem);
+            });
+            
+            updateTotals();
+        }
+        
+        function updateTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal + deliveryFee;
+            
+            subtotalElement.textContent = `₱${subtotal.toFixed(2)}`;
+            totalElement.textContent = `₱${total.toFixed(2)}`;
+        }
+
+        function updateQuantity(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1); // Remove item if quantity is 0
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+        
+        function validateForm() {
+            const form = document.getElementById('deliveryForm');
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = 'red';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = 'var(--border-color)';
+                }
+            });
+            
+            // Validate email format
+            const email = document.getElementById('email');
+            if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+                email.style.borderColor = 'red';
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        function processCheckout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty. Please add items before checking out.');
+                return;
+            }
+            
+            if (!validateForm()) {
+                alert('Please fill in all required fields correctly.');
+                return;
+            }
+            
+            // Gather all order information
+            const order = {
+                customer: {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    zip: document.getElementById('zip').value,
+                    notes: document.getElementById('notes').value
+                },
+                delivery: document.querySelector('input[name="delivery"]:checked').value,
+                payment: document.querySelector('input[name="payment"]:checked').value,
+                items: [...cart],
+                subtotal: parseFloat(subtotalElement.textContent.replace('₱', '')),
+                deliveryFee: deliveryFee,
+                total: parseFloat(totalElement.textContent.replace('₱', '')),
+                date: new Date().toISOString()
+            };
+            
+            // In a real app, you would send this to your server
+            console.log('Order submitted:', order);
+            
+            // Show confirmation
+            const confirmation = `
+                <div style="text-align: center; padding: 2rem;">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 1rem;">
+                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="#4CAF50"/>
+                    </svg>
+                    <h2 style="margin-bottom: 1rem;">Order Confirmed!</h2>
+                    <p style="margin-bottom: 1.5rem;">Thank you for your order from BakedwithLauv.</p>
+                    <p>We've sent a confirmation to <strong>${order.customer.email}</strong>.</p>
+                    <p style="margin-top: 1rem;">Your order number is <strong>#${Math.floor(Math.random() * 1000000)}</strong></p>
+                </div>
+            `;
+            
+            cartContainer.innerHTML = confirmation;
+            document.querySelector('.checkout-btn').style.display = 'none';
+            
+            // Clear cart
+            localStorage.removeItem('cart');
+            
+            // Optionally redirect to home after delay
+            // setTimeout(() => window.location.href = 'index.html', 5000);
+        }
+
+        // Initialize
+        renderCart();
+    </script>
+</body>
+</html>
